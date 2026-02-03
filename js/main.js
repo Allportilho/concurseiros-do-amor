@@ -3,14 +3,54 @@ const perfis = {
     nome: "Alisson Portilho",
     area: "Fiscal / Controle",
     maxHorasPontuaveis: 4,
-    maxPontosDiarios: 8
+    maxPontosDiarios: 8,
+    disciplinas: {
+      basicas: [
+        "Português",
+        "Raciocínio Lógico / Estatística",
+        "Informática",
+        "Direito Constitucional",
+        "Direito Administrativo"
+      ],
+      especificas: [
+        "Direito Tributário",
+        "Legislação Tributária",
+        "Contabilidade",
+        "Auditoria",
+        "AFO"
+      ]
+    }
   },
+
   B: {
     nome: "Succi F. Caetano",
     area: "Policial",
     maxHorasPontuaveis: 2,
-    maxPontosDiarios: 8
+    maxPontosDiarios: 8,
+    disciplinas: {
+      basicas: [
+        "Português",
+        "Raciocínio Lógico",
+        "Informática",
+        "Direitos Humanos",
+        "Legislação Penal Especial"
+      ],
+      especificas: [
+        "Direito Penal",
+        "Processo Penal",
+        "Criminologia",
+        "Investigação Policial",
+        "Medicina Legal"
+      ]
+    }
   }
+};
+
+
+let ranking = {
+  semanal: { A: 0, B: 0 },
+  mensal: { A: 0, B: 0 },
+  geral: { A: 0, B: 0 }
 };
 
 function registrar() {
@@ -20,28 +60,30 @@ function registrar() {
 
   const perfil = perfis[perfilSelecionado];
 
-  let pontos = 0;
+  let pontos = Math.floor(minutos / 30) + Math.floor(questoes / 20) * 2;
 
-  // 1 ponto a cada 30 min
-  const pontosPorTempo = Math.floor(minutos / 30);
+  const maxPorHoras = perfil.maxHorasPontuaveis * 2;
+  if (pontos > maxPorHoras) pontos = maxPorHoras;
+  if (pontos > perfil.maxPontosDiarios) pontos = perfil.maxPontosDiarios;
 
-  // 2 pontos a cada 20 questões
-  const pontosPorQuestoes = Math.floor(questoes / 20) * 2;
+  ranking.semanal[perfilSelecionado] += pontos;
+  ranking.mensal[perfilSelecionado] += pontos;
+  ranking.geral[perfilSelecionado] += pontos;
 
-  pontos = pontosPorTempo + pontosPorQuestoes;
-
-  // Limitar pelas horas pontuáveis
-  const maxPontosPorHoras = perfil.maxHorasPontuaveis * 2; // 2 pts por hora
-  if (pontos > maxPontosPorHoras) {
-    pontos = maxPontosPorHoras;
-  }
-
-  // Limitar pelo teto diário
-  if (pontos > perfil.maxPontosDiarios) {
-    pontos = perfil.maxPontosDiarios;
-  }
+  atualizarRanking();
 
   document.getElementById("resultado").innerText =
     `🔥 ${perfil.nome} fez ${pontos} pontos hoje!`;
+}
+
+function atualizarRanking() {
+  document.getElementById("rankSemanal").innerText =
+    `Alisson: ${ranking.semanal.A} | Succi: ${ranking.semanal.B}`;
+
+  document.getElementById("rankMensal").innerText =
+    `Alisson: ${ranking.mensal.A} | Succi: ${ranking.mensal.B}`;
+
+  document.getElementById("rankGeral").innerText =
+    `Alisson: ${ranking.geral.A} | Succi: ${ranking.geral.B}`;
 }
 
