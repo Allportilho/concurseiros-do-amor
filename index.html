@@ -1,59 +1,332 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>🏆 Concurseiros do Amor</title>
-  <link rel="stylesheet" href="css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Desafio Concurseiros do Amor™</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❤️</text></svg>">
 </head>
 <body>
+    <header>
+        <h1><i class="fas fa-heart"></i> Desafio Concurseiros do Amor™</h1>
+        <p>Transformando estudos em uma competição saudável e motivadora ❤️📚</p>
+    </header>
 
-  <header>
-    <h1>🏆 Desafio Concurseiros do Amor™</h1>
-    <p>Estudo, amor e disciplina lado a lado ❤️📚</p>
-  </header>
+    <div class="container">
+        <!-- Competidores -->
+        <div class="competitors">
+            <div class="competitor-card fiscal">
+                <div class="competitor-avatar">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="competitor-name">Alisson Portilho</div>
+                <div class="competitor-area">Área Fiscal/Controle</div>
+                <div class="points-display" id="points-fiscal">0</div>
+                <div>Pontos da Semana</div>
+            </div>
+            
+            <div class="competitor-card policial">
+                <div class="competitor-avatar">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="competitor-name">Succi F. Caetano</div>
+                <div class="competitor-area">Área Policial</div>
+                <div class="points-display" id="points-policial">0</div>
+                <div>Pontos da Semana</div>
+            </div>
+        </div>
 
-  <main>
+        <!-- Seletor de Dias -->
+        <section class="card">
+            <h2><i class="fas fa-calendar-day"></i> Controle Diário</h2>
+            
+            <div class="day-selector">
+                <button class="day-btn active" onclick="selectDay('segunda')">Segunda</button>
+                <button class="day-btn" onclick="selectDay('terca')">Terça</button>
+                <button class="day-btn" onclick="selectDay('quarta')">Quarta</button>
+                <button class="day-btn" onclick="selectDay('quinta')">Quinta</button>
+                <button class="day-btn" onclick="selectDay('sexta')">Sexta</button>
+                <button class="day-btn" onclick="selectDay('sabado')">Sábado</button>
+                <button class="day-btn" onclick="selectDay('domingo')">Domingo</button>
+            </div>
+            
+            <div class="current-day-info">
+                <p>Registrando para: <strong id="current-day-display">Segunda-feira</strong></p>
+            </div>
+        </section>
 
-<section class="card">
-  <h2>👥 Perfis</h2>
-  <p><strong>Alisson Portilho</strong> – Área Fiscal / Controle</p>
-  <p><strong>Succi F. Caetano</strong> – Área Policial</p>
-</section>
+        <!-- Registro de Atividades -->
+        <div class="activities-grid">
+            <section class="card">
+                <h2><i class="fas fa-clock"></i> Estudo Diário</h2>
+                <p class="subtitle">30 minutos = 10 pontos (máx 120 min/dia)</p>
+                
+                <div class="input-group">
+                    <label>Minutos estudados - Alisson:</label>
+                    <input type="number" id="study-fiscal" min="0" max="120" placeholder="0-120 min">
+                    <button class="btn" onclick="addStudyTime('fiscal')">Adicionar</button>
+                    <div class="progress-info" id="study-info-fiscal">Hoje: 0/120 min</div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Minutos estudados - Succi:</label>
+                    <input type="number" id="study-policial" min="0" max="120" placeholder="0-120 min">
+                    <button class="btn" onclick="addStudyTime('policial')">Adicionar</button>
+                    <div class="progress-info" id="study-info-policial">Hoje: 0/120 min</div>
+                </div>
+            </section>
 
-<section class="card">
-  <h2>📌 Registro Diário</h2>
+            <section class="card">
+                <h2><i class="fas fa-question-circle"></i> Questões Diárias</h2>
+                <p class="subtitle">Meta semanal: Alisson=300 | Succi=80</p>
+                
+                <div class="input-group">
+                    <label>Questões hoje - Alisson:</label>
+                    <input type="number" id="questions-fiscal" min="0" placeholder="Nº questões">
+                    <button class="btn" onclick="addQuestions('fiscal')">Adicionar</button>
+                    <div class="progress-info" id="questions-info-fiscal">Semana: 0/300 (0 extra)</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="questions-bar-fiscal"></div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Questões hoje - Succi:</label>
+                    <input type="number" id="questions-policial" min="0" placeholder="Nº questões">
+                    <button class="btn" onclick="addQuestions('policial')">Adicionar</button>
+                    <div class="progress-info" id="questions-info-policial">Semana: 0/80 (0 extra)</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="questions-bar-policial"></div>
+                    </div>
+                </div>
+            </section>
 
-  <label>Quem estudou:</label>
-  <select id="perfil">
-    <option value="A">Alisson (Fiscal)</option>
-    <option value="B">Succi (Policial)</option>
-  </select>
+            <section class="card">
+                <h2><i class="fas fa-check-circle"></i> Metas Diárias</h2>
+                <p class="subtitle">Marque as metas cumpridas hoje</p>
+                
+                <div class="meta-buttons">
+                    <h3>Alisson (Fiscal):</h3>
+                    <button class="meta-btn" onclick="toggleMeta('fiscal', 'revisao')">📚 Revisão</button>
+                    <button class="meta-btn" onclick="toggleMeta('fiscal', 'disciplina')">📖 Disciplina</button>
+                    
+                    <h3>Succi (Policial):</h3>
+                    <button class="meta-btn" onclick="toggleMeta('policial', 'revisao')">📚 Revisão</button>
+                    <button class="meta-btn" onclick="toggleMeta('policial', 'lei-seca')">⚖️ Lei Seca</button>
+                    <button class="meta-btn" onclick="toggleMeta('policial', 'disciplina')">📖 Disciplina</button>
+                </div>
+                
+                <div class="meta-status">
+                    <p>Status hoje: <span id="meta-status-text">Nenhuma meta registrada</span></p>
+                </div>
+            </section>
 
-  <label>Minutos estudados:</label>
-  <input type="number" id="minutos">
+            <section class="card">
+                <h2><i class="fas fa-star"></i> Extras & Penalidades</h2>
+                
+                <div class="extra-buttons">
+                    <button class="btn extra" onclick="addSimulado('fiscal')">
+                        <i class="fas fa-file-alt"></i> Simulado Alisson (+100)
+                    </button>
+                    <button class="btn extra" onclick="addSimulado('policial')">
+                        <i class="fas fa-file-alt"></i> Simulado Succi (+100)
+                    </button>
+                    <button class="btn penalty" onclick="applyPenalty('fiscal')">
+                        <i class="fas fa-exclamation-triangle"></i> Falta Alisson (-50)
+                    </button>
+                    <button class="btn penalty" onclick="applyPenalty('policial')">
+                        <i class="fas fa-exclamation-triangle"></i> Falta Succi (-50)
+                    </button>
+                </div>
+                
+                <div class="bonus-info">
+                    <p><i class="fas fa-award"></i> Bônus de constância: +100 pontos (7 dias de estudo)</p>
+                </div>
+            </section>
+        </div>
 
-  <label>Questões resolvidas:</label>
-  <input type="number" id="questoes">
+        <!-- Progresso Semanal -->
+        <section class="card full-width">
+            <h2><i class="fas fa-chart-bar"></i> Progresso da Semana</h2>
+            
+            <div class="progress-grid">
+                <div class="progress-col">
+                    <h3>Alisson Portilho</h3>
+                    <div class="progress-item">
+                        <span>Questões:</span>
+                        <span id="total-questions-fiscal">0/300</span>
+                    </div>
+                    <div class="progress-item">
+                        <span>Dias com metas:</span>
+                        <span id="dias-metas-fiscal">0/7</span>
+                    </div>
+                    <div class="progress-item">
+                        <span>Pontos metas:</span>
+                        <span id="pontos-metas-fiscal">0</span>
+                    </div>
+                    <div class="progress-item">
+                        <span>Pontos extras:</span>
+                        <span id="pontos-extras-fiscal">0</span>
+                    </div>
+                </div>
+                
+                <div class="progress-col">
+                    <h3>Succi F. Caetano</h3>
+                    <div class="progress-item">
+                        <span>Questões:</span>
+                        <span id="total-questions-policial">0/80</span>
+                    </div>
+                    <div class="progress-item">
+                        <span>Dias com metas:</span>
+                        <span id="dias-metas-policial">0/7</span>
+                    </div>
+                    <div class="progress-item">
+                        <span>Pontos metas:</span>
+                        <span id="pontos-metas-policial">0</span>
+                    </div>
+                    <div class="progress-item">
+                        <span>Pontos extras:</span>
+                        <span id="pontos-extras-policial">0</span>
+                    </div>
+                </div>
+                
+                <div class="progress-col winner-col">
+                    <h3>🏆 Vencedor Atual</h3>
+                    <div class="winner-display" id="winner-display">
+                        <p id="winner-name">Aguardando...</p>
+                        <p id="winner-points">0 pontos</p>
+                    </div>
+                    <button class="btn winner-btn" onclick="finalizarSemana()">
+                        <i class="fas fa-flag-checkered"></i> Finalizar Semana
+                    </button>
+                </div>
+            </div>
+        </section>
 
-  <button onclick="registrar()">Registrar Pontos</button>
+        <!-- Histórico e Temporada -->
+        <div class="history-grid">
+            <section class="card">
+                <h2><i class="fas fa-history"></i> Histórico da Semana</h2>
+                <div id="week-history">
+                    <p class="empty-history">Nenhum registro ainda nesta semana.</p>
+                </div>
+            </section>
+            
+            <section class="card">
+                <h2><i class="fas fa-trophy"></i> Temporada (4 semanas)</h2>
+                <div id="season-history">
+                    <p class="empty-history">Nenhuma semana concluída ainda.</p>
+                </div>
+                <div class="season-info">
+                    <p>Semana atual: <strong id="current-week">1</strong> de 4</p>
+                    <button class="btn secondary" onclick="iniciarNovaSemana()">
+                        <i class="fas fa-redo"></i> Nova Semana
+                    </button>
+                </div>
+            </section>
+        </div>
 
-  <p id="resultado"></p>
-</section>
+        <!-- Prêmios -->
+        <section class="card full-width">
+            <h2><i class="fas fa-gift"></i> Prêmios</h2>
+            <div class="premios-grid">
+                <div class="premio-category">
+                    <h3>🏆 Vencedor Semanal</h3>
+                    <ul>
+                        <li><i class="fas fa-film"></i> Escolher filme/série da semana</li>
+                        <li><i class="fas fa-heart"></i> Date pago pelo outro</li>
+                        <li><i class="fas fa-star"></i> Pedido especial (bom senso 😏)</li>
+                        <li><i class="fas fa-spa"></i> Massagem ou jantar preparado</li>
+                        <li><i class="fas fa-umbrella-beach"></i> Escolher o rolê do fim de semana</li>
+                    </ul>
+                </div>
+                
+                <div class="premio-category">
+                    <h3>🏆 Campeão da Temporada</h3>
+                    <ul>
+                        <li><i class="fas fa-crown"></i> Um dia inteiro de mimos</li>
+                        <li><i class="fas fa-gift"></i> Presente simbólico</li>
+                        <li><i class="fas fa-envelope"></i> Carta romântica</li>
+                        <li><i class="fas fa-utensils"></i> Jantar especial</li>
+                        <li><i class="fas fa-handshake"></i> Outro prêmio em comum acordo</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
-<section class="card">
-  <h2>🎯 Metas da Semana</h2>
-  <div id="metas"></div>
-</section>
+        <!-- Cláusulas Especiais -->
+        <section class="card special">
+            <h2><i class="fas fa-heart"></i> Cláusulas Especiais</h2>
+            <div class="clausulas">
+                <p><i class="fas fa-ban"></i> Quem perder não pode reclamar</p>
+                <p><i class="fas fa-smile"></i> Quem ganhar não pode humilhar</p>
+                <p><i class="fas fa-kiss-wink-heart"></i> Beijo obrigatório ao final de cada semana</p>
+                <p class="clausula-principal"><i class="fas fa-heart"></i> O amor é soberano sobre qualquer pontuação ❤️</p>
+            </div>
+        </section>
 
-<section class="card">
-  <h2>🏆 Ranking</h2>
-  <p><strong>Semanal:</strong> <span id="rankSemanal"></span></p>
-  <p><strong>Mensal:</strong> <span id="rankMensal"></span></p>
-  <p><strong>Geral:</strong> <span id="rankGeral"></span></p>
-</section>
+        <!-- Controles Gerais -->
+        <footer>
+            <div class="footer-controls">
+                <button class="btn secondary" onclick="exportData()">
+                    <i class="fas fa-download"></i> Exportar Dados
+                </button>
+                <button class="btn secondary" onclick="resetAllData()">
+                    <i class="fas fa-trash-alt"></i> Reiniciar Tudo
+                </button>
+                <button class="btn" onclick="showHelp()">
+                    <i class="fas fa-question-circle"></i> Ajuda
+                </button>
+            </div>
+            <p class="footer-text">Desafio Concurseiros do Amor™ · Feito com ❤️ para Alisson e Succi</p>
+        </footer>
+    </div>
 
-</main>
+    <!-- Modal de Resultados -->
+    <div class="modal" id="results-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-trophy"></i> Resultado da Semana</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modal-results"></div>
+        </div>
+    </div>
 
-  <script src="js/main.js"></script>
+    <!-- Modal de Ajuda -->
+    <div class="modal" id="help-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-question-circle"></i> Como Funciona</h2>
+                <button class="close-modal" onclick="closeHelp()">&times;</button>
+            </div>
+            <div class="help-content">
+                <h3>📊 Sistema de Pontuação:</h3>
+                <ul>
+                    <li><strong>Estudo:</strong> 30 min = 10 pontos (máx 120 min/dia)</li>
+                    <li><strong>Questões:</strong> 1 ponto por questão extra após a meta</li>
+                    <li><strong>Metas semanais:</strong> 25 pontos cada (questões, revisão, disciplina, lei seca)</li>
+                    <li><strong>Simulado:</strong> 100 pontos por simulado completo</li>
+                    <li><strong>Penalidades:</strong> -50 pontos por falta sem aviso</li>
+                </ul>
+                
+                <h3>🎯 Metas Semanais:</h3>
+                <p><strong>Alisson:</strong> 300 questões + revisão + disciplina</p>
+                <p><strong>Succi:</strong> 80 questões + revisão + lei seca + disciplina</p>
+                
+                <h3>📅 Como Usar:</h3>
+                <ol>
+                    <li>Selecione o dia da semana</li>
+                    <li>Registre estudo, questões e metas diárias</li>
+                    <li>Acompanhe o progresso nas barras</li>
+                    <li>Finalize a semana para ver o vencedor</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
 </body>
 </html>
