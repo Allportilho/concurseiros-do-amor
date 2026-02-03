@@ -18,17 +18,14 @@ const perfis = {
   A: {
     nome: "Alisson Portilho",
     area: "Fiscal / Controle",
-    limiteDiario: 8, // pontos/dia
-    maxHorasPontuaveis: 4,
-    questoesSemana: 180,
-    metas: ["Lei Seca", "Exatas", "Tributário", "Auditoria"]
+    maxHorasPontuaveis: 4,   // pode estudar até 4h pontuáveis
+    maxPontosDiarios: 8     // mas só pode fazer no máximo 8 pts/dia
   },
   B: {
     nome: "Succi F. Caetano",
     area: "Policial",
-    limiteDiario: 4, // pontos/dia
-    maxHorasPontuaveis: 2,
-    questoesSemana: 80,
-    metas: ["Lei Seca", "Inquérito", "Teoria do Crime", "Volume"]
+    maxHorasPontuaveis: 2,   // só 2h pontuáveis
+    maxPontosDiarios: 8     // mesmo teto de pontos 😈⚖️
   }
 };
+
