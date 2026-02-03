@@ -1086,3 +1086,203 @@ window.onclick = function(event) {
 document.addEventListener('submit', function(e) {
     e.preventDefault();
 });
+// ==============================================
+// FUNÇÕES ADICIONAIS PARA ATENDER AO REGULAMENTO
+// ==============================================
+
+// 1. Bônus de Constância (7 dias de estudo)
+function verificarBonusConstancia(competidor) {
+    const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
+    let diasEstudados = 0;
+    
+    days.forEach(day => {
+        const data = state.dailyData[day][competidor] || {};
+        if (data.study && data.study >= 30) { // Pelo menos 30 minutos
+            diasEstudados++;
+        }
+    });
+    
+    return diasEstudados === 7;
+}
+
+// 2. Penalidade "Nenhuma Meta"
+function verificarPenalidadeNenhumaMeta(competidor) {
+    const totals = state.weeklyTotals[competidor];
+    const metas = state.metasSemanais[competidor];
+    
+    // Verificar se todas as metas estão zeradas
+    const questoesCumpridas = totals.questions >= metas.questionsTarget;
+    const revisaoCumprida = totals.revisaoDays >= 6;
+    const disciplinaCumprida = totals.disciplinaDays >= 6;
+    
+    // Para Succi, verificar também lei seca
+    let leiSecaCumprida = true;
+    if (competidor === 'policial') {
+        leiSecaCumprida = totals.leiSecaDays >= 6;
+    }
+    
+    // Se NENHUMA meta foi cumprida
+    return !questoesCumpridas && !revisaoCumprida && !disciplinaCumprida && !leiSecaCumprida;
+}
+
+// 3. Sistema de Desempate
+function desempate(pontosFiscal, pontosPolicial, metasFiscal, metasPolicial, questoesFiscal, questoesPolicial) {
+    // 1º Critério: Quem cumpriu mais metas
+    if (metasFiscal > metasPolicial) return 'fiscal';
+    if (metasPolicial > metasFiscal) return 'policial';
+    
+    // 2º Critério: Quem fez mais questões
+    if (questoesFiscal > questoesPolicial) return 'fiscal';
+    if (questoesPolicial > questoesFiscal) return 'policial';
+    
+    // 3º Critério: Empate técnico
+    return 'empate';
+}
+
+// 4. Calcular número de metas cumpridas
+function contarMetasCumpridas(competidor) {
+    let count = 0;
+    const totals = state.weeklyTotals[competidor];
+    const metas = state.metasSemanais[competidor];
+    
+    if (totals.questions >= metas.questionsTarget) count++;
+    if (totals.revisaoDays >= 6) count++;
+    if (totals.disciplinaDays >= 6) count++;
+    
+    if (competidor === 'policial' && totals.leiSecaDays >= 6) count++;
+    
+    return count;
+}
+
+// 5. Atualizar função finalizarSemana() com novas regras
+function finalizarSemanaAtualizada() {
+    // Calcular pontos base
+    let pontosFiscal = state.points.fiscal;
+    let pontosPolicial = state.points.policial;
+    
+    // Adicionar pontos das metas
+    const pontosMetasFiscal = calcularPontosMetas('fiscal');
+    const pontosMetasPolicial = calcularPontosMetas('policial');
+    pontosFiscal += pontosMetasFiscal;
+    pontosPolicial += pontosMetasPolicial;
+    
+    // Adicionar pontos extras (questões)
+    const pontosExtrasFiscal = calcularPontosExtras('fiscal');
+    const pontosExtrasPolicial = calcularPontosExtras('policial');
+    pontosFiscal += pontosExtrasFiscal;
+    pontosPolicial += pontosExtrasPolicial;
+    
+    // Verificar bônus de constância
+    if (verificarBonusConstancia('fiscal')) {
+        pontosFiscal += 100;
+        showFeedback('Alisson ganhou +100 pontos de bônus por constância!', 'success');
+    }
+    if (verificarBonusConstancia('policial')) {
+        pontosPolicial += 100;
+        showFeedback('Succi ganhou +100 pontos de bônus por constância!', 'success');
+    }
+    
+    // Verificar penalidade "nenhuma meta"
+    if (verificarPenalidadeNenhumaMeta('fiscal')) {
+        pontosFiscal -= 100;
+        showFeedback('Alisson perdeu -100 pontos por não cumprir nenhuma meta!', 'error');
+    }
+    if (verificarPenalidadeNenhumaMeta('policial')) {
+        pontosPolicial -= 100;
+        showFeedback('Succi perdeu -100 pontos por não cumprir nenhuma meta!', 'error');
+    }
+    
+    // Determinar vencedor com desempate
+    const metasCumpridasFiscal = contarMetasCumpridas('fiscal');
+    const metasCumpridasPolicial = contarMetasCumpridas('policial');
+    const questoesFiscal = state.weeklyTotals.fiscal.questions;
+    const questoesPolicial = state.weeklyTotals.policial.questions;
+    
+    let vencedor = null;
+    let pontosVencedor = 0;
+    let empate = false;
+    
+    if (pontosFiscal > pontosPolicial) {
+        vencedor = 'fiscal';
+        pontosVencedor = pontosFiscal;
+    } else if (pontosPolicial > pontosFiscal) {
+        vencedor = 'policial';
+        pontosVencedor = pontosPolicial;
+    } else {
+        // Empate - usar sistema de desempate
+        vencedor = desempate(pontosFiscal, pontosPolicial, 
+                           metasCumpridasFiscal, metasCumpridasPolicial,
+                           questoesFiscal, questoesPolicial);
+        pontosVencedor = pontosFiscal;
+        empate = (vencedor === 'empate');
+    }
+    
+    // Salvar resultado da semana
+    const weekResult = {
+        week: state.currentWeek,
+        points: pontosVencedor,
+        winner: vencedor,
+        details: {
+            fiscal: pontosFiscal,
+            policial: pontosPolicial,
+            pontosMetasFiscal,
+            pontosMetasPolicial,
+            pontosExtrasFiscal,
+            pontosExtrasPolicial,
+            metasCumpridasFiscal,
+            metasCumpridasPolicial
+        }
+    };
+    
+    state.weekHistory.push(weekResult);
+    
+    // Verificar se é final da temporada
+    if (state.currentWeek === state.seasonWeeks) {
+        determinarCampeaoTemporada();
+    }
+    
+    // Mostrar resultados
+    mostrarResultadosComDesempate(weekResult, empate, 
+                                 metasCumpridasFiscal, metasCumpridasPolicial,
+                                 questoesFiscal, questoesPolicial);
+    
+    // Preparar para próxima semana
+    if (state.currentWeek < state.seasonWeeks) {
+        state.currentWeek++;
+    }
+}
+
+// 6. Substituir a chamada do botão "Finalizar Semana"
+// No HTML, mudar: onclick="finalizarSemana()" para onclick="finalizarSemanaAtualizada()"
+
+// 7. Função de exportação melhorada
+function exportarDadosCompletos() {
+    const dadosCompletos = {
+        estadoAtual: state,
+        dataExportacao: new Date().toISOString(),
+        versaoSistema: '2.0',
+        exportadoPor: navigator.userAgent,
+        resumo: {
+            semanaAtual: state.currentWeek,
+            pontosAlisson: state.points.fiscal,
+            pontosSucci: state.points.policial,
+            historicoSemanas: state.weekHistory.length
+        }
+    };
+    
+    const dadosStr = JSON.stringify(dadosCompletos, null, 2);
+    const nomeArquivo = `concurseiros-amor-${new Date().toISOString().slice(0,10)}.json`;
+    
+    // Criar link para download
+    const blob = new Blob([dadosStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = nomeArquivo;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    showFeedback('Dados exportados com sucesso!', 'success');
+}
