@@ -14,34 +14,45 @@
 
   <main>
 
-   <section class="card">
-  <h2>👥 Perfis do Desafio</h2>
+<section class="card">
+  <h2>👥 Perfis</h2>
   <p><strong>Alisson Portilho</strong> – Área Fiscal / Controle</p>
   <p><strong>Succi F. Caetano</strong> – Área Policial</p>
 </section>
 
+<section class="card">
+  <h2>📌 Registro Diário</h2>
 
-    <section class="card">
-      <h2>📌 Registrar Estudo</h2>
+  <label>Quem estudou:</label>
+  <select id="perfil">
+    <option value="A">Alisson (Fiscal)</option>
+    <option value="B">Succi (Policial)</option>
+  </select>
 
-      <label>Quem estudou:</label>
-      <select id="perfil">
-        <option value="A">Alisson (Fiscal)</option>
-        <option value="B">Succi (Policial)</option>
-      </select>
+  <label>Minutos estudados:</label>
+  <input type="number" id="minutos">
 
-      <label>Minutos estudados:</label>
-      <input type="number" id="minutos" />
+  <label>Questões resolvidas:</label>
+  <input type="number" id="questoes">
 
-      <label>Questões resolvidas:</label>
-      <input type="number" id="questoes" />
+  <button onclick="registrar()">Registrar Pontos</button>
 
-      <button onclick="registrar()">Calcular Pontos</button>
+  <p id="resultado"></p>
+</section>
 
-      <p id="resultado"></p>
-    </section>
+<section class="card">
+  <h2>🎯 Metas da Semana</h2>
+  <div id="metas"></div>
+</section>
 
-  </main>
+<section class="card">
+  <h2>🏆 Ranking</h2>
+  <p><strong>Semanal:</strong> <span id="rankSemanal"></span></p>
+  <p><strong>Mensal:</strong> <span id="rankMensal"></span></p>
+  <p><strong>Geral:</strong> <span id="rankGeral"></span></p>
+</section>
+
+</main>
 
   <script src="js/main.js"></script>
 </body>
